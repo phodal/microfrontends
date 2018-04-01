@@ -1,5 +1,45 @@
 # 微前端的那些事儿
 
+**目录**
+
+
+*   [微前端的那些事儿](#%E5%BE%AE%E5%89%8D%E7%AB%AF%E7%9A%84%E9%82%A3%E4%BA%9B%E4%BA%8B%E5%84%BF)
+*   [如何解构单体前端应用——前端应用的微服务式拆分](#%E5%A6%82%E4%BD%95%E8%A7%A3%E6%9E%84%E5%8D%95%E4%BD%93%E5%89%8D%E7%AB%AF%E5%BA%94%E7%94%A8%E2%80%94%E2%80%94%E5%89%8D%E7%AB%AF%E5%BA%94%E7%94%A8%E7%9A%84%E5%BE%AE%E6%9C%8D%E5%8A%A1%E5%BC%8F%E6%8B%86%E5%88%86)
+    *   [前端微服化](#%E5%89%8D%E7%AB%AF%E5%BE%AE%E6%9C%8D%E5%8C%96)
+        *   [独立开发](#%E7%8B%AC%E7%AB%8B%E5%BC%80%E5%8F%91)
+        *   [独立部署](#%E7%8B%AC%E7%AB%8B%E9%83%A8%E7%BD%B2)
+        *   [我们真的需要技术无关吗？](#%E6%88%91%E4%BB%AC%E7%9C%9F%E7%9A%84%E9%9C%80%E8%A6%81%E6%8A%80%E6%9C%AF%E6%97%A0%E5%85%B3%E5%90%97%EF%BC%9F)
+        *   [不影响用户体验](#%E4%B8%8D%E5%BD%B1%E5%93%8D%E7%94%A8%E6%88%B7%E4%BD%93%E9%AA%8C)
+    *   [微前端的设计理念](#%E5%BE%AE%E5%89%8D%E7%AB%AF%E7%9A%84%E8%AE%BE%E8%AE%A1%E7%90%86%E5%BF%B5)
+        *   [设计理念一：中心化路由](#%E8%AE%BE%E8%AE%A1%E7%90%86%E5%BF%B5%E4%B8%80%EF%BC%9A%E4%B8%AD%E5%BF%83%E5%8C%96%E8%B7%AF%E7%94%B1)
+        *   [设计理念二：标识化应用](#%E8%AE%BE%E8%AE%A1%E7%90%86%E5%BF%B5%E4%BA%8C%EF%BC%9A%E6%A0%87%E8%AF%86%E5%8C%96%E5%BA%94%E7%94%A8)
+        *   [设计理念三：生命周期](#%E8%AE%BE%E8%AE%A1%E7%90%86%E5%BF%B5%E4%B8%89%EF%BC%9A%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F)
+        *   [设计理念四：独立部署与配置自动化](#%E8%AE%BE%E8%AE%A1%E7%90%86%E5%BF%B5%E5%9B%9B%EF%BC%9A%E7%8B%AC%E7%AB%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E9%85%8D%E7%BD%AE%E8%87%AA%E5%8A%A8%E5%8C%96)
+    *   [实战微前端架构设计](#%E5%AE%9E%E6%88%98%E5%BE%AE%E5%89%8D%E7%AB%AF%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1)
+        *   [独立部署与配置自动化](#%E7%8B%AC%E7%AB%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E9%85%8D%E7%BD%AE%E8%87%AA%E5%8A%A8%E5%8C%96)
+        *   [应用间路由——事件](#%E5%BA%94%E7%94%A8%E9%97%B4%E8%B7%AF%E7%94%B1%E2%80%94%E2%80%94%E4%BA%8B%E4%BB%B6)
+*   [大型 Angular 应用微前端的四种拆分策略](#%E5%A4%A7%E5%9E%8B-angular-%E5%BA%94%E7%94%A8%E5%BE%AE%E5%89%8D%E7%AB%AF%E7%9A%84%E5%9B%9B%E7%A7%8D%E6%8B%86%E5%88%86%E7%AD%96%E7%95%A5)
+    *   [前端微服务化：路由懒加载及其变体](#%E5%89%8D%E7%AB%AF%E5%BE%AE%E6%9C%8D%E5%8A%A1%E5%8C%96%EF%BC%9A%E8%B7%AF%E7%94%B1%E6%87%92%E5%8A%A0%E8%BD%BD%E5%8F%8A%E5%85%B6%E5%8F%98%E4%BD%93)
+    *   [微服务化方案：子应用模式](#%E5%BE%AE%E6%9C%8D%E5%8A%A1%E5%8C%96%E6%96%B9%E6%A1%88%EF%BC%9A%E5%AD%90%E5%BA%94%E7%94%A8%E6%A8%A1%E5%BC%8F)
+    *   [方案对比](#%E6%96%B9%E6%A1%88%E5%AF%B9%E6%AF%94)
+        *   [标准 LazyLoad](#%E6%A0%87%E5%87%86-lazyload)
+        *   [LazyLoad 变体 1：构建时集成](#lazyload-%E5%8F%98%E4%BD%93-1%EF%BC%9A%E6%9E%84%E5%BB%BA%E6%97%B6%E9%9B%86%E6%88%90)
+        *   [LazyLoad 变体 2：构建后集成](#lazyload-%E5%8F%98%E4%BD%93-2%EF%BC%9A%E6%9E%84%E5%BB%BA%E5%90%8E%E9%9B%86%E6%88%90)
+        *   [前端微服务化](#%E5%89%8D%E7%AB%AF%E5%BE%AE%E6%9C%8D%E5%8A%A1%E5%8C%96)
+    *   [总对比](#%E6%80%BB%E5%AF%B9%E6%AF%94)
+*   [前端微服务化：使用微前端框架 Mooa 开发微前端应用](#%E5%89%8D%E7%AB%AF%E5%BE%AE%E6%9C%8D%E5%8A%A1%E5%8C%96%EF%BC%9A%E4%BD%BF%E7%94%A8%E5%BE%AE%E5%89%8D%E7%AB%AF%E6%A1%86%E6%9E%B6-mooa-%E5%BC%80%E5%8F%91%E5%BE%AE%E5%89%8D%E7%AB%AF%E5%BA%94%E7%94%A8)
+    *   [Mooa 概念](#mooa-%E6%A6%82%E5%BF%B5)
+    *   [微前端主工程创建](#%E5%BE%AE%E5%89%8D%E7%AB%AF%E4%B8%BB%E5%B7%A5%E7%A8%8B%E5%88%9B%E5%BB%BA)
+    *   [Mooa 子应用创建](#mooa-%E5%AD%90%E5%BA%94%E7%94%A8%E5%88%9B%E5%BB%BA)
+    *   [导航到特定的子应用](#%E5%AF%BC%E8%88%AA%E5%88%B0%E7%89%B9%E5%AE%9A%E7%9A%84%E5%AD%90%E5%BA%94%E7%94%A8)
+*   [前端微服务化：使用特制的 iframe 微服务化 Angular 应用](#%E5%89%8D%E7%AB%AF%E5%BE%AE%E6%9C%8D%E5%8A%A1%E5%8C%96%EF%BC%9A%E4%BD%BF%E7%94%A8%E7%89%B9%E5%88%B6%E7%9A%84-iframe-%E5%BE%AE%E6%9C%8D%E5%8A%A1%E5%8C%96-angular-%E5%BA%94%E7%94%A8)
+    *   [iframe 微服务架构设计](#iframe-%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1)
+    *   [微前端框架 Mooa 的特制 iframe 模式](#%E5%BE%AE%E5%89%8D%E7%AB%AF%E6%A1%86%E6%9E%B6-mooa-%E7%9A%84%E7%89%B9%E5%88%B6-iframe-%E6%A8%A1%E5%BC%8F)
+    *   [微前端框架 Mooa iframe 通讯机制](#%E5%BE%AE%E5%89%8D%E7%AB%AF%E6%A1%86%E6%9E%B6-mooa-iframe-%E9%80%9A%E8%AE%AF%E6%9C%BA%E5%88%B6)
+        *   [发布主应用事件](#%E5%8F%91%E5%B8%83%E4%B8%BB%E5%BA%94%E7%94%A8%E4%BA%8B%E4%BB%B6)
+        *   [监听子应用事件](#%E7%9B%91%E5%90%AC%E5%AD%90%E5%BA%94%E7%94%A8%E4%BA%8B%E4%BB%B6)
+    *   [示例](#%E7%A4%BA%E4%BE%8B)
+
 如何解构单体前端应用——前端应用的微服务式拆分
 ===
 
