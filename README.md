@@ -128,7 +128,7 @@ Single-SPA 设计了一个基本的生命周期（虽然它没有统一管理）
 
 故而，其对应的架构如下图所示：
 
-![Architecture](./imgs/mooa/mooa-app.jpg)
+![Architecture](./imgs/mooa-app.jpg)
 
 ### 独立部署与配置自动化
 
