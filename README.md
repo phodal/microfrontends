@@ -205,7 +205,7 @@ iframe 可以创建一个全新的独立的宿主环境，这意味着我们的�
 
 如果我们做的是一个应用平台，会在我们的系统中集成第三方系统，或者多个不同部门团队下的系统，显然这是一个不错的方案。一些典型的场景，如传统的 Desktop 应用迁移到 Web 应用：
 
-![Angular Tabs 示例](images/angular-tabs-example.png)
+![Angular Tabs 示例](imgs/angular-tabs-example.png)
 
 如果这一类应用过于复杂，那么它必然是要进行微服务化的拆分。因此，在采用 iframe 的时候，我们需要做这么两件事：
 
@@ -260,7 +260,7 @@ iframe 可以创建一个全新的独立的宿主环境，这意味着我们的�
 
 应用间的关系如下图所示（其忽略图中的 “前端微服务化”）：
 
-![组合式集成对比](images/angular-split-code-compare.jpg)
+![组合式集成对比](imgs/angular-split-code-compare.jpg)
 
 这种方式看上去相当的理想，即能满足多个团队并行开发，又能构建出适合的交付物。
 
@@ -303,7 +303,7 @@ iframe 可以创建一个全新的独立的宿主环境，这意味着我们的�
 
 随后，在各自的 HTML 文件里，创建相应的组件元素，编写相应的组件逻辑。一个典型的 Web Components 应用架构如下图所示：
 
-![Web Components 架构](images/web-components-architecture.png)
+![Web Components 架构](imgs/web-components-architecture.png)
 
 可以看到这边方式与我们上面使用 iframe 的方式很相似，组件拥有自己独立的 ``Scripts`` 和 ``Styles``，以及对应的用于单独部署组件的域名。然而它并没有想象中的那么美好，要直接使用**纯** Web Components 来构建前端应用的难度有：
 
