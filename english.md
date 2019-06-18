@@ -6,6 +6,53 @@ At the same time, they can also be developed in parallel with **sharing componen
 
 **Note**: The front-end application here refers to a single-page application separated from the front and back. It is meaningful to talk about the micro-frontends on this basis.
 
+TOC:
+
+*   [Thinking in Microfrontend](#thinking-in-microfrontend)
+*   [Why micro-frontends be popular – aggregation of web applications](#why-micro-frontends-be-popular-%E2%80%93-aggregation-of-web-applications)
+    *   [Migration frontend legacy system](#migration-frontend-legacy-system-)
+    *   [Backend decoupling, frontend aggregation](#backend-decoupling-frontend-aggregation)
+    *   [Compatible with legacy systems](#compatible-with-legacy-systems)
+*   [Six ways to implement a micro-frontends architecture](#six-ways-to-implement-a-micro-frontends-architecture)
+    *   [Basic: Application Distribution Routing -> Route Distribution Application](#basic-application-distribution-routing---route-distribution-application)
+        *   [Backend: Function Call -> Remote Call](#backend-function-call---remote-call)
+        *   [Front End: Component Call -> Application Call](#front-end-component-call---application-call)
+    *   [Route-dispatch micro-frontends](#route-dispatch-micro-frontends)
+    *   [Create a container with iFrame](#create-a-container-with-iframe)
+    *   [Homemade micro-frontends framework](#homemade-micro-frontends-framework-)
+    *   [Combined integration: Widging applications](#combined-integration-widging-applications)
+    *   [Pure Web Components technology build](#pure-web-components-technology-build)
+    *   [Build with Web Components](#build-with-web-components)
+        *   [Integrating existing frameworks in Web Components](#integrating-existing-frameworks-in-web-components)
+        *   [Web Components integrated into existing frameworks](#web-components-integrated-into-existing-frameworks)
+    *   [Compound type micro-frontends](#compound-type-micro-frontends)
+    *   [Microfrontend Quick Selection Guide](#microfrontend-quick-selection-guide)
+    *   [Comparison of micro front-end solutions: a brief comparison](#comparison-of-micro-front-end-solutions-a-brief-comparison)
+    *   [Comparison of micro front-end solutions: complex ways](#comparison-of-micro-front-end-solutions-complex-ways)
+*   [How to deconstruct mono front-end application - microservice splitting of front-end applications](#how-to-deconstruct-mono-front-end-application---microservice-splitting-of-front-end-applications)
+    *   [front end microservice](#front-end-microservice)
+        *   [Independent development](#independent-development)
+        *   [Independent deployment](#independent-deployment)
+        *   [Do we really need technology independently?](#do-we-really-need-technology-independently)
+        *   [Does not affect the user experience](#does-not-affect-the-user-experience)
+    *   [Micro-frontends design concept](#micro-frontends-design-concept)
+        *   [Design Concept 1: Centralized Routing](#design-concept-1-centralized-routing)
+        *   [Design Concept 2: Identification Application](#design-concept-2-identification-application)
+        *   [Design Concept 3: Life Cycle](#design-concept-3-life-cycle)
+        *   [Design Concept 4: Independent Deployment and Configuration Automation](#design-concept-4-independent-deployment-and-configuration-automation)
+    *   [Practical micro-frontends architecture design](#practical-micro-frontends-architecture-design)
+        *   [Independent Deployment and Configuration Automation](#independent-deployment-and-configuration-automation)
+        *   [Inter-Application Routing - Events](#inter-application-routing---events)
+*   [Four to split large Angular application to micro-frontends](#four-to-split-large-angular-application-to-micro-frontends)
+    *   [1, front-end micro-services: routing lazy loading and its variants](#1-front-end-micro-services-routing-lazy-loading-and-its-variants)
+    *   [2, microservice solution: sub-application mode](#2-microservice-solution-sub-application-mode)
+    *   [Solution comparison](#solution-comparison)
+        *   [Standard LazyLoad](#standard-lazyload)
+        *   [LazyLoad Variant 1: Build-time integration](#lazyload-variant-1-build-time-integration)
+        *   [LazyLoad variant 2: Post-build integration](#lazyload-variant-2-post-build-integration)
+        *   [Front-end micro-service](#front-end-micro-service)
+    *   [Total contrast](#total-contrast)
+
 
 Why micro-frontends be popular – aggregation of web applications
 ===
@@ -360,6 +407,397 @@ Compound type micro-frontends
 
 I am not nonsense :)
 
+## Microfrontend Quick Selection Guide
 
+I still give the conclusion directly:
+
+![Micro Front End Selection Guide](imgs/choice-your-microservices-en.png)
+
+The relevant explanations of the key points are as follows:
+
+**Frame restrictions**. In the back-end microservices system, people use libraries in other languages ​​to develop new services, such as Python for artificial intelligence. But at the front end, there is almost no such possibility. So when we have only one front-end framework, we have a wider range of options when using micro-front-end technology. Unfortunately, most organizations need to be compatible with legacy systems.
+
+**IE problem**. Whether it was a few years ago or this year, the first consideration we implemented in the micro front end was support for IE. In the projects I have encountered, basically I need to support IE, so there are certain restrictions on the technical selection. And on our projects that don't need to support IE, they can use WebComponents technology to build micro-front-end applications.
+
+**Standalone Independence**. That is, the dependencies of each micro front-end application are to be managed in a unified manner, or to be managed by themselves in each application. Unified management can solve the problem of repeated load dependencies, and independent management brings additional traffic overhead and latency.
+
+Comparison of micro front-end solutions: a brief comparison
+---
+
+If you are still not familiar with the above aspects, please read the "Six and Seven Ways of Implementing Front-End Microservices."
+
+Ways | Development Costs | Maintenance Costs | Feasibility | Same Framework Requirements | Difficulties in Implementation |
+---------|---------|--------|-------|----------|-- -----|-------
+Route Distribution | Low | Low | High | No | ★ | This program is too common
+iFrame | Low | Low | High | No | ★ | This program is too common
+Application Microservices | High | Low | Medium | No | ★★★★ | Customized and Hook for each frame
+Micro-Widget | High | Medium | Low | Yes | ★★★★★ | Hack for build systems like webpack
+Micro-apps | Medium | Medium | High | Yes | ★★★ | Unify build specifications for different applications
+Pure Web Components | High | Low | High | No | ★★ | New Technology, Browser Compatibility Issues
+Combine Web Components | High | Low | High | No | ★★ | New technology, browser compatibility issues
+
+Similarly, some complex concepts are explained as follows:
+
+**Application micro-services**, that is, each front-end application is a separate service-oriented front-end application, and is equipped with a unified application management and startup mechanism, such as micro-front-end framework Single-SPA or [mooa](https://github.com/phodal/mooa).
+
+**Micro-Widget**, that is, through the hack of the build system, different front-end applications can use the same set of dependencies. It basically improves the problem of repeatedly loading dependent files in **Apps Microservices**.
+
+**Micro-apps**, also known as **combined integration**, that is, through software engineering, splitting single applications in the development environment, and combining the applications into one in the build environment application. For detailed details, you can look forward to the following article "Disassembly and Micro-Service of a Single Front-End Application"
+
+Comparison of micro front-end solutions: complex ways
+---
+
+I saw a micro-service related [article](https://www.softwarearchitekt.at/post/2017/12/28/a-software-architect-s-approach-towards-using-angular-and-spas-in-general-for-microservices-aka-microfrontends.aspx), introduces the difference between different microservices, which uses a more interesting comparison method in detail, here is the same way to show:
+
+Architectural goal | description
+------------------|---------------
+a. Independent development | Independent development without being affected
+b. Standalone deployment | Can be deployed as a single service
+c. Support different frameworks | Can use different frameworks at the same time, such as Angular, Vue, React
+d. Shake tree optimization | Can eliminate unused code
+e. Environmental isolation | The context between applications is undisturbed
+f. Multiple applications running simultaneously | Different applications can run simultaneously
+g. Shared dependencies | Whether different applications share the underlying dependency library
+h. Dependency conflict | Whether different versions of dependencies cause conflicts
+i. Integrated Compilation | The application is finally compiled into a whole, not built separately
+
+Then, for the table below, a~j in the table represent several different architectural considerations above.
+
+(PS: Considering the length of several words of Web Components, temporarily refer to it as WC~~)
+
+Way | a | b | c | d | e | f | g | h | i
+-----------|---|---|---|---|---|---|---|---|---
+Route Distribution | O | O | O | O | O | O | | |
+iFrame | O | O | O | O | O | O | | |
+Application Microservices | O | O | O | | | O | | |
+Widget | O | O | | | - | - | O | - |
+Micro-application | O | O | | O | - | - | O | - |
+Pure WC | O | O | | O | O | O | - | - |
+Combine WC | O | O | O | O | O | O | | |
+
+O in the figure indicates support, blank indicates no support, and - indicates no effect.
+
+Combine the previous selection guide:
+
+![Micro Front End Selection Guide](imgs/choice-your-microservices.png)
+
+How to deconstruct mono front-end application - microservice splitting of front-end applications
+===
+
+> Refresh the page? Route splitting? No, dynamically load components.
+
+This article is divided into the following four parts:
+
+ - Introduction to front-end micro-services
+ - Micro front end design concept
+ - Practical micro front-end architecture design
+ - Front-end microservices based on Mooa
+
+front end microservice
+---
+
+For front-end microservices, there are some options:
+
+ - Web Component obviously has a very good infrastructure. However, we are not likely to rewrite existing applications in large numbers.
+ - iFrame. Are you serious?
+ - Another micro front-end framework, Single-SPA, is obviously a better way. However, it is not Production Ready.
+ - Split the application by routing, and this jump will affect the user experience.
+ - and many more.
+
+Therefore, when we consider front-end micro-services, we hope that:
+
+ - Independent deployment
+ - Independent development
+ - technology independently
+ - Does not affect the user experience
+
+### Independent development
+
+In the past few weeks, I spent a lot of time learning the code for Single-SPA. However, I found it really too cumbersome to develop and deploy, and I couldn't reach the standard of independent deployment. According to the design of Single-SPA, I need to name my application in the entry file before I can build it:
+
+```javascript
+declareChildApplication('inferno', () => import('src/inferno/inferno.app.js'), pathPrefix('/inferno'));
+```
+
+At the same time, in my application, I still need to specify my life cycle. This means that when I develop a new application, I have to update two pieces of code: the main project and the application. At this time we are also very likely to work in the same source.
+
+When there are multiple teams working in the same source, it obviously becomes quite unreliable - for example, the other team is using Tab, and we are using 2 spaces, the next door is used by Pharaoh. 4 spaces.
+
+### Independent deployment
+
+The biggest problem with a single front-end application is that the js and css files built are quite large. The micro front end means that the file is split into multiple files independently, and they can be deployed independently.
+
+### Do we really need technology independently?
+
+Wait, do we really need **technology independently**? If we don't need technology, the micro front-end problem is easy to solve.
+
+In fact, for most companies and teams, technology has nothing to do with an irrelevant speech. When several founders of a company use Java, it is highly likely that Java will continue to be used in future selections. Unless, there are some extra services to implement artificial intelligence using Python. Therefore, in most cases, it is still the only technology stack.
+
+This is especially true for front-end projects: basically only one framework is selected in a department.
+
+So we chose Angular.
+
+### Does not affect the user experience
+
+Using route jumps for front-end micro-services is a very simple and efficient way to split. However, during the route jump, there will be a white screen process. In this process, the application before the jump and the application to be jumped lose control of the page. If there is a problem with this application, then the user will be overwhelmed.
+
+Ideally, it should be controllable.
+
+Micro-frontends design concept
+---
+
+### Design Concept 1: Centralized Routing
+
+Is the nature of the Internet decentralized? No, DNS has decided that it is not. FLAG / TAB , decided that it is not.
+
+In essence, microservices should be decentralized. However, it cannot be completely decentralized. For a microservice, it requires a **service registry**:
+
+> The service provider wants to register the notification service address, and the caller of the service should be able to discover the target service.
+
+For a front-end application, this thing is routing.
+
+From the page, only when we add a menu link on the page, the user can know that a page is available.
+
+From the code point of view, that is, we need to have a place to manage our application: **find out which applications exist and which application uses which route**.
+
+**Managing our routes is actually managing our applications**.
+
+### Design Concept 2: Identification Application
+
+When designing a micro front-end framework, the problem of getting a name for each project lingered me for a long time - how to normalize this thing. Until, I once again thought of Conway's law:
+
+> System design (product structure is equivalent to organizational form, the organization of each design system, which produces a design equivalent to the communication structure between organizations.
+
+In other words, it is impossible to have two projects with the same name under the same organization.
+
+Therefore, this problem is solved simply.
+
+### Design Concept 3: Life Cycle
+
+Single-SPA has designed a basic lifecycle (although it is not managed uniformly) and it contains five states:
+
+ - load, decide which application to load and bind the lifecycle
+ - bootstrap, get static resources
+ - mount, install the application, such as creating a DOM node
+ - unload, delete the life cycle of the application
+ - unmount, uninstall the application, such as deleting the DOM node
+
+So, I basically followed this life cycle in design. Obviously, things like load are superfluous to my design.
+
+### Design Concept 4: Independent Deployment and Configuration Automation
+
+In a sense, the entire system is built around the application configuration. If the configuration of the application can be automated, the entire system is automated.
+
+When we only develop a new component, then we only need to update our components and update the configuration. And this configuration itself should also be automatically generated.
+
+Practical micro-frontends architecture design
+---
+
+Based on the above premise, the workflow of the system is as follows:
+
+![System Workflow](imgs/mooa-graph-en.png)
+
+The overall engineering process is as follows:
+
+1. When the main project is running, it will go to the server to get the latest application configuration.
+2. After the main project gets the configuration, it will create the application one by one and bind the lifecycle to the application.
+3. When the main project detects the route change, it will find out if there is a corresponding route matching to the application.
+4. When the matching pair corresponds to the application, the corresponding application is loaded.
+
+Therefore, its corresponding structure is shown below:
+
+![Architecture](imgs/mooa-app-en.jpg)
+
+The overall process is shown below:
+
+![Workflow](imgs/workflow.png)
+
+### Independent Deployment and Configuration Automation
+
+The deployment strategy we made is as follows: The configuration file used by our application is called ``apps.json``, which is obtained by the main project. Every time we deploy, we just need to point ``apps.json`` to the latest configuration file. The configured file class is as follows:
+
+1. 96a7907e5488b6bb.json
+2. 6ff3bfaaa2cd39ea.json
+3. dcd074685c97ab9b.json
+
+The configuration of an application is as follows:
+
+```javascript
+{
+  "name": "help",
+  "selector": "help-root",
+  "baseScriptUrl": "/assets/help",
+  "styles": [
+    "styles.bundle.css"
+  ],
+  "prefix": "help",
+  "scripts": [
+    "inline.bundle.js",
+    "polyfills.bundle.js",
+    "main.bundle.js"
+  ]
+}
+```
+
+Here ``selector`` corresponds to the DOM node required by the application, and prefix is ​​used for URL routing. These are automatically generated from the ``index.html`` file and ``package.json``.
+
+### Inter-Application Routing - Events
+
+Because the current application has become two parts: the main project and the application part. There will be a problem: **Only one project can capture routing changes**. When the primary route of the application is changed by the main project, it cannot be effectively communicated to the sub-application. At this time, the sub-application can only be notified by means of an event, and the sub-application also needs to monitor whether it is the route of the current application.
+
+```javascript
+if (event.detail.app.name === appName) {
+  let urlPrefix = 'app'
+  if (urlPrefix) {
+    urlPrefix = `/${window.mooa.option.urlPrefix}/`
+  }
+  router.navigate([event.detail.url.replace(urlPrefix + appName, '')])
+}
+```
+
+Similarly, when we need to jump from application A to application B, we also need a mechanism like this:
+
+```javascript
+window.addEventListener('mooa.routing.navigate', function(event: CustomEvent) {
+  Const opts = event.detail
+  If (opts) {
+    navigateAppByName(opts)
+  }
+});
+```
+
+The rest of the animations like Loading are similar.
+
+Four to split large Angular application to micro-frontends
+===
+
+In 2018, we spent a lot of time designing a solution to split a large Angular app. A series of discussions took place from the use of Angular's Lazyload to front-end microservices. Finally, we finally got the result, using the Lazyload variant: **the way to integrate code** when building.
+
+As a “professional” consultant, I have been busy designing an Angular split service solution for my clients. Mainly to achieve the following design goals:
+
+ - Build a plug-in web development platform to meet the needs of rapid business change and distributed multi-team parallel development
+ - Build serviced middleware to build a highly available and highly multiplexed front-end microservice platform
+ - Support independent delivery and deployment of front ends
+
+Simply put, it is to support **application plug-in development**, and **multi-team parallel development**.
+
+**Application plug-in development**, the main problem to be solved is: the split problem of bloated large-scale applications. Large front-end applications face a lot of ** legacy code when developing, and code of different services are coupled together. When uploading online, they also face slow loading and low operating efficiency.
+
+Finally, it falls on two schemes: routing lazy loading and its variants and front-end micro-services
+
+1, front-end micro-services: routing lazy loading and its variants
+---
+
+The route is lazy loaded, that is, the application is cut into different codes through different routes, and the corresponding component is loaded when the route is accessed. In the framework of Angular and Vue, it can be implemented by routing + Webpack. And, inevitably, some problems will be needed:
+
+**It is difficult to develop multiple teams in parallel.** Route splitting means that we still work in a source repository. You can also try splitting into different projects and compiling them together.
+
+**Every release needs to be recompiled**, yes, when we just update the code of a submodule, we have to recompile the entire application and republish the application. Instead of building it independently, release it.
+
+**Unified Vendor version**, it is a good thing to unify third-party dependencies. The key to the problem is that whenever we add a new dependency, we might need to have a meeting to discuss it.
+
+However, the biggest problem with the standard Route Lazyload is that it is difficult to develop multiple teams in parallel. The reason why it is said is “difficult” because there is still a way to solve this problem. In daily development, a small team will always be developed in a code base, while a large team should be developed in a different code base.
+
+So, we did some experiments on the standard route lazy loading.
+
+For a team of 20 or 30 people, they may belong to different departments in the business, and there are technically inconsistent specifications, such as 4 spaces, 2 spaces or Tab. Especially when it is a different company and team, they may have to abandon a series of questions such as testing, code static detection, code style unification and so on.
+
+2, microservice solution: sub-application mode
+---
+
+In addition to routing lazy loading, we can also use the sub-application mode, that is, each application is independent of each other. That is, we have a pedestal project. When the user clicks on the corresponding route, we load the ** independent ** Angular application; if it is the route under the same application, it does not need to be reloaded. Moreover, these can all be done by relying on the browser cache.
+
+In addition to routing lazy loading, you can also use an application embedding solution similar to Mooa. The following is an example of HTML generated based on the Mooa framework + Angular development:
+
+```html
+<app-root _nghost-c0="" ng-version="4.2.0">
+  ...
+  <app-home _nghost-c2="">
+    <app-app1 _nghost-c0="" ng-version="5.2.8" style="display: none;"><nav _ngcontent-c0="" class="navbar"></app-app1>
+    <iframe frameborder="" width="100%" height="100%" src="http://localhost:4200/app/help/homeassets/iframe.html" id="help_206547"></iframe>
+  </app-home>
+</app-root>
+```
+
+Mooa provides two modes, one is based on Single-SPA experiments, loading and rendering two Angular applications on the same page; one is based on iFrame to provide a separate application container.
+
+Solved the following problems:
+
+ - **Home page loading faster**, because only the features needed for the home page need to be loaded, not all dependencies.
+ - **Multiple teams are developing in parallel**, each team can be independently developed in their own projects.
+ - **Modular update independently**, now we only need to update our application separately without having to update the entire complete application.
+
+However, it still contains the following issues:
+
+ - Repeated loading of dependencies, ie the modules we use in the A app, will also be reused in the B app. Some can be solved automatically by the browser's cache.
+ - It takes time to open the corresponding app for the first time, of course ** preloading** can solve part of the problem.
+ - Running in non-iframe mode, you will encounter unpredictable third-party dependency conflicts.
+
+So after summarizing a series of discussions, we formed a series of comparisons:
+
+Solution comparison
+---
+
+In this process, we have done a lot of program design and comparison, and I want to write an article to compare the previous results. Look at the picture first:
+
+![Angular code split comparison](imgs/angular-split-code-compare-en.jpg)
+
+Table comparison:
+
+x | Standard Lazyload | Build-Time Integration | Post-Build Integration | Application Independent
+--------|--------------|------------|------------- |-------------
+Development process | Multiple teams are developing in the same code base | Multiple teams are developing in different code bases | Multiple teams are developing in different code bases | Multiple teams are developing in different code bases
+Build and publish | Build only need to take this code to build, deploy | integrate the code of different code bases, and then build the application | will be compiled directly into each project module, the runtime will be merged through lazy loading | will be compiled directly Into several different applications, the runtime is loaded by the main project
+Applicable scenarios | Single team, less dependent library, single business | Multiple teams, less dependent libraries, single business | Multiple teams, less dependent libraries, single business | Multiple teams, relying on multiple systems, complex business
+Performance mode | Development, construction, operation integration | Development separation, construction integration, operation integration | development separation, construction separation, operation integration | development, construction, operation separation
+
+The detailed introduction is as follows:
+
+### Standard LazyLoad
+
+Development process: Multiple teams are developed in the same code base, and only need to use this code to deploy.
+
+Behavior: development, construction, and operation
+
+Applicable scenarios: single team, less dependent libraries, single business
+
+### LazyLoad Variant 1: Build-time integration
+
+Development process: Multiple teams are developed in different code bases. When building, integrate the code of different code bases and build the application.
+
+Applicable scenarios: multiple teams, less dependent libraries, single business
+
+Variant-build integration: development separation, integration when building, running one
+
+### LazyLoad variant 2: Post-build integration
+
+Development process: Multiple teams are developed in different code bases, compiled into different pieces of code at build time, and merged together by lazy loading.
+
+Applicable scenarios: multiple teams, less dependent libraries, single business
+
+Variant - post-build integration: development separation, construction separation, operation integration
+
+### Front-end micro-service
+
+Development process: Multiple teams are developed in different code bases, compiled into different applications at build time, and loaded by the main project at runtime.
+
+Applicable scenarios: multi-team, relying on Kudo, business complexity
+
+Front-end micro-services: development, construction, and operation separation
+
+Total contrast
+---
+
+The overall comparison is shown in the following table:
+
+x | Standard Lazyload | Build-Time Integration | Post-Build Integration | Application Independent
+--------|--------------|------------|------------- |-------------
+Dependency Management | Unified Management | Unified Management | Unified Management | Independent Management of Applications
+Deployment Method | Unified Deployment | Unified Deployment | Can be deployed separately. Full deployment when updating dependencies | Fully independent deployment
+First screen loading | Depends on the same file, slow loading | Depends on the same file, slow loading | Depends on the same file, slow loading | Depends on their own management, home loading fast
+Loading applications, modules for the first time | Loading modules only, fast | Loading modules only, fast | Loading modules only, fast | Loading separately, loading slightly slower
+Pre-build cost | Low | Design build process | Design build process | Design communication mechanism and loading method
+Maintenance costs | A code base is not well managed | Multiple code bases are not uniform | Late need to maintain component dependencies | Low maintenance costs
+Package optimization | Shake tree optimization, AoT compilation, delete useless code | Shake tree optimization, AoT compilation, delete useless code | Application dependent components can not be determined, can not delete useless code | Shake tree optimization, AoT compilation, Delete useless code
 
 
