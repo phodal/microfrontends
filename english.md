@@ -426,15 +426,16 @@ Comparison of micro front-end solutions: a brief comparison
 
 If you are still not familiar with the above aspects, please read the "Six and Seven Ways of Implementing Front-End Microservices."
 
-Ways | Development Costs | Maintenance Costs | Feasibility | Same Framework Requirements | Difficulties in Implementation |
----------|---------|--------|-------|----------|-- -----|-------
+Ways | Development Costs | Maintenance Costs | Feasibility | Same Framework Requirements | Difficulties in Implementation
+---------|---------|--------|-------|----------|-------
 Route Distribution | Low | Low | High | No | ★ | This program is too common
 iFrame | Low | Low | High | No | ★ | This program is too common
 Application Microservices | High | Low | Medium | No | ★★★★ | Customized and Hook for each frame
 Micro-Widget | High | Medium | Low | Yes | ★★★★★ | Hack for build systems like webpack
 Micro-apps | Medium | Medium | High | Yes | ★★★ | Unify build specifications for different applications
-Pure Web Components | High | Low | High | No | ★★ | New Technology, Browser Compatibility Issues
-Combine Web Components | High | Low | High | No | ★★ | New technology, browser compatibility issues
+Pure Web Components | High | Low | High | No | ★★ | New Technology, Browser Compatibility Issues Combine
+Web Components | High | Low | High | No | ★★ | New technology, browser compatibility issues
+
 
 Similarly, some complex concepts are explained as follows:
 
