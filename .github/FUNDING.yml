@@ -9,4 +9,4 @@ community_bridge: # Replace with a single Community Bridge project-name e.g., cl
 liberapay: # Replace with a single Liberapay username
 issuehunt: # Replace with a single IssueHunt username
 otechie: # Replace with a single Otechie username
-custom: [https://book.douban.com/subject/33477112/, https://item.jd.com/12621088.html, http://product.dangdang.com/27878052.html]
+custom: https://book.douban.com/subject/33477112/
